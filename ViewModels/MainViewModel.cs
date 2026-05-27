@@ -13,6 +13,7 @@ namespace MagicSearch.ViewModels
     {
         private readonly SettingsService _settingsService = new();
         private readonly IndexService _indexService = new();
+        private readonly IndexCacheService _indexCacheService = new();
         private readonly SearchService _searchService = new();
         private readonly LaunchService _launchService = new();
         private readonly HotkeyService _hotkeyService = new();
@@ -125,7 +126,7 @@ namespace MagicSearch.ViewModels
                 StatusText = "Ctrl+Space is already in use by another app.";
             }
 
-            _ = RefreshIndexAsync();
+            _ = InitializeIndexAsync();
         }
 
         public void LaunchSelected(bool openContainingFolder)
@@ -160,6 +161,29 @@ namespace MagicSearch.ViewModels
             _hotkeyService.Dispose();
         }
 
+        private async Task InitializeIndexAsync()
+        {
+            try
+            {
+                StatusText = "Loading cached index...";
+                _indexedItems = await _indexCacheService.LoadAsync();
+
+                if (_indexedItems.Count > 0)
+                {
+                    StatusText = $"Loaded {_indexedItems.Count:N0} cached items";
+                    LastIndexedText = "Loaded from cache";
+                    UpdateResults();
+                    return;
+                }
+            }
+            catch
+            {
+                StatusText = "No cache found";
+            }
+
+            await RefreshIndexAsync();
+        }
+
         private async Task RefreshIndexAsync()
         {
             CancelIndex();
@@ -179,7 +203,11 @@ namespace MagicSearch.ViewModels
                 });
 
                 _indexedItems = await _indexService.BuildIndexAsync(settings.IndexedFolders, progress, cancellation.Token);
+                await _indexCacheService.SaveAsync(_indexedItems);
+
                 var indexedAt = DateTime.Now;
+
+                StatusText = $"Finished indexing {_indexedItems.Count:N0} items";
                 StatusText = $"Indexed {_indexedItems.Count:N0} items";
                 LastIndexedText = $"Last indexed {indexedAt:g}";
                 UpdateResults();

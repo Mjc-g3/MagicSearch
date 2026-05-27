@@ -3,24 +3,67 @@ using System.Windows.Input;
 using MagicSearch.ViewModels;
 using MagicSearch.Models;
 using System.Windows.Controls;
+using Hardcodet.Wpf.TaskbarNotification;
 
 namespace MagicSearch
 {
     public partial class MainWindow : Window
     {
         private MainViewModel ViewModel => (MainViewModel)DataContext;
+        private readonly TaskbarIcon _trayIcon = new();
 
         public MainWindow()
         {
             InitializeComponent();
+
             ViewModel.RequestHide += (_, _) => HideOverlay();
             ViewModel.RequestShow += (_, _) => ShowOverlay();
             ViewModel.RequestFocusSearch += (_, _) => FocusSearch();
             ViewModel.Initialize(this);
         }
 
+        private void SetupTrayIcon()
+        {
+            _trayIcon.Icon = new System.Drawing.Icon("Assets/app.ico");
+            _trayIcon.ToolTipText = "MagicSearch";
+
+            _trayIcon.TrayLeftMouseUp += (_, _) => ShowOverlay();
+
+            var menu = new System.Windows.Controls.ContextMenu();
+
+            var openItem = new System.Windows.Controls.MenuItem
+            {
+                Header = "Open MagicSearch"
+            };
+            openItem.Click += (_, _) => ShowOverlay();
+
+            var settingsItem = new System.Windows.Controls.MenuItem
+            {
+                Header = "Settings"
+            };
+            settingsItem.Click += (_, _) => ViewModel.OpenSettingsCommand.Execute(null);
+
+            var exitItem = new System.Windows.Controls.MenuItem
+            {
+                Header = "Exit"
+            };
+            exitItem.Click += (_, _) =>
+            {
+                _trayIcon.Dispose();
+                Application.Current.Shutdown();
+            };
+
+            menu.Items.Add(openItem);
+            menu.Items.Add(settingsItem);
+            menu.Items.Add(new System.Windows.Controls.Separator());
+            menu.Items.Add(exitItem);
+
+            _trayIcon.ContextMenu = menu;
+        }
+
         protected override void OnClosed(EventArgs e)
         {
+            _trayIcon.Dispose();
             ViewModel.Dispose();
             base.OnClosed(e);
         }
