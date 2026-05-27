@@ -83,42 +83,95 @@ namespace MagicSearch.Services
 
             foreach (var folder in folders.Where(Directory.Exists))
             {
-                foreach (var shortcut in EnumerateFilesSafe(folder, cancellationToken))
-                {
-                    if (!Path.GetExtension(shortcut).Equals(".lnk", StringComparison.OrdinalIgnoreCase))
-                    {
-                        continue;
-                    }
+                IEnumerable<string> shortcuts;
 
+                try
+                {
+                    shortcuts = Directory.EnumerateFiles(folder, "*.lnk", SearchOption.AllDirectories);
+                }
+                catch (Exception ex) when (IsSafeToIgnore(ex))
+                {
+                    shortcuts = [];
+                }
+
+                foreach (var shortcut in shortcuts)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
                     items.Add(CreateItem(shortcut, "app", includeIcon: true));
                 }
             }
         }
 
+
         private static void IndexFolder(
-            string folder,
-            List<IndexedItem> items,
-            IProgress<IndexProgress>? progress,
-            CancellationToken cancellationToken,
-            bool skipSystemFolders)
+    string folder,
+    List<IndexedItem> items,
+    IProgress<IndexProgress>? progress,
+    CancellationToken cancellationToken,
+    bool skipSystemFolders)
         {
             if (!Directory.Exists(folder))
             {
                 return;
             }
 
+            var pending = new Stack<string>();
+            pending.Push(folder);
+
             var lastProgressCount = 0;
 
-            foreach (var directory in EnumerateDirectoriesSafe(folder, cancellationToken, skipSystemFolders))
+            while (pending.Count > 0)
             {
-                items.Add(CreateItem(directory, "folder", includeIcon: false));
-                ReportProgressIfNeeded(items, progress, directory, ref lastProgressCount);
-            }
+                cancellationToken.ThrowIfCancellationRequested();
 
-            foreach (var file in EnumerateFilesSafe(folder, cancellationToken, skipSystemFolders))
-            {
-                items.Add(CreateItem(file, GetFileType(file), includeIcon: false));
-                ReportProgressIfNeeded(items, progress, file, ref lastProgressCount);
+                var current = pending.Pop();
+
+                if (ShouldSkipDirectory(current, skipSystemFolders))
+                {
+                    continue;
+                }
+
+                IEnumerable<string> directories;
+                try
+                {
+                    directories = Directory.EnumerateDirectories(current);
+                }
+                catch (Exception ex) when (IsSafeToIgnore(ex))
+                {
+                    directories = [];
+                }
+
+                foreach (var directory in directories)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    if (ShouldSkipDirectory(directory, skipSystemFolders))
+                    {
+                        continue;
+                    }
+
+                    items.Add(CreateItem(directory, "folder", includeIcon: false));
+                    pending.Push(directory);
+                    ReportProgressIfNeeded(items, progress, directory, ref lastProgressCount);
+                }
+
+                IEnumerable<string> files;
+                try
+                {
+                    files = Directory.EnumerateFiles(current);
+                }
+                catch (Exception ex) when (IsSafeToIgnore(ex))
+                {
+                    files = [];
+                }
+
+                foreach (var file in files)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    items.Add(CreateItem(file, GetFileType(file), includeIcon: false));
+                    ReportProgressIfNeeded(items, progress, file, ref lastProgressCount);
+                }
             }
         }
 
