@@ -116,14 +116,17 @@ namespace MagicSearch.ViewModels
             set => SetField(ref _selectedResult, value);
         }
 
-        public void Initialize(Window owner)
+
+        public async void Initialize(Window owner)
         {
             _owner = owner;
             _hotkeyService.HotkeyPressed += (_, _) => ToggleOverlay();
 
-            if (!_hotkeyService.Register(owner))
+            var settings = await _settingsService.LoadAsync();
+
+            if (!_hotkeyService.Register(owner, settings.HotkeyModifiers, settings.HotkeyKey))
             {
-                StatusText = "Ctrl+Space is already in use by another app.";
+                StatusText = $"{settings.HotkeyDisplay} is already in use by another app.";
             }
 
             _ = InitializeIndexAsync();
@@ -226,6 +229,7 @@ namespace MagicSearch.ViewModels
             {
                 if (_indexCancellation == cancellation)
                 {
+                    IsIndexing = false;
                     _indexCancellation.Dispose();
                     _indexCancellation = null;
                 }
@@ -280,14 +284,34 @@ namespace MagicSearch.ViewModels
                 return;
             }
 
-            var settingsWindow = new SettingsWindow(_settingsService)
+            var settingsWindow = new SettingsWindow(_settingsService, IsIndexing)
             {
                 Owner = _owner
             };
 
             if (settingsWindow.ShowDialog() == true)
             {
-                _ = RefreshIndexAsync();
+                var newSettings = _settingsService.LoadAsync().GetAwaiter().GetResult();
+
+                if (!_hotkeyService.TryChangeHotkey(_owner, newSettings.HotkeyModifiers, newSettings.HotkeyKey))
+                {
+                    System.Windows.MessageBox.Show(
+                        _owner,
+                        $"{newSettings.HotkeyDisplay} could not be registered. Reverting to Ctrl + Space.",
+                        "Hotkey unavailable",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
+
+                    newSettings.HotkeyModifiers = 0x0002;
+                    newSettings.HotkeyKey = 0x20;
+                    newSettings.HotkeyDisplay = "Ctrl + Space";
+
+                    _settingsService.SaveAsync(newSettings).GetAwaiter().GetResult();
+                    _hotkeyService.TryChangeHotkey(_owner, newSettings.HotkeyModifiers, newSettings.HotkeyKey);
+                }
+
+                //_ = RefreshIndexAsync();
             }
         }
 

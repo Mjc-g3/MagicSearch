@@ -3,33 +3,90 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MagicSearch Settings"
         Width="560"
-        Height="420"
+        Height="500"
         WindowStartupLocation="CenterOwner"
         Background="#17191F"
         Foreground="{StaticResource PrimaryTextBrush}">
     <Grid Margin="18">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <StackPanel>
-            <TextBlock Text="Indexed folders"
+            <TextBlock Text="Settings"
                        FontSize="20"
                        FontWeight="SemiBold" />
-            <TextBlock Text="Folders added here are searched alongside Start Menu apps."
+            <TextBlock Text="Choose indexed folders and change the global search hotkey."
                        Foreground="{StaticResource SecondaryTextBrush}"
                        Margin="0,4,0,14" />
         </StackPanel>
 
-        <ListBox x:Name="FoldersList"
-                 Grid.Row="1"
-                 Background="#101217"
-                 BorderBrush="#33FFFFFF"
-                 Foreground="{StaticResource PrimaryTextBrush}" />
+        <Border Grid.Row="1"
+                Background="#101217"
+                BorderBrush="#33FFFFFF"
+                BorderThickness="1"
+                CornerRadius="10"
+                Padding="12"
+                Margin="0,0,0,14">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="180" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-        <Grid Grid.Row="2" Margin="0,14,0,0">
+                <StackPanel>
+                    <TextBlock Text="Global hotkey"
+                               FontWeight="SemiBold" />
+                    <TextBlock Text="This opens the MagicSearch overlay."
+                               Foreground="{StaticResource SecondaryTextBrush}"
+                               FontSize="12"
+                               Margin="0,3,0,0" />
+                </StackPanel>
+
+                <TextBox x:Name="HotkeyBox"
+                         Grid.Column="1"
+                         Height="34"
+                         IsReadOnly="True"
+                         VerticalContentAlignment="Center"
+                         TextAlignment="Center"
+                         PreviewKeyDown="HotkeyBox_PreviewKeyDown" />
+
+                <Button Grid.Column="2"
+                        Content="Reset"
+                        Width="70"
+                        Height="34"
+                        Margin="8,0,0,0"
+                        Click="ResetHotkey_Click" />
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <StackPanel>
+                <TextBlock Text="Indexed folders"
+                           FontSize="16"
+                           FontWeight="SemiBold" />
+                <TextBlock Text="Folders added here are searched alongside Start Menu apps."
+                           Foreground="{StaticResource SecondaryTextBrush}"
+                           Margin="0,4,0,10" />
+            </StackPanel>
+
+            <ListBox x:Name="FoldersList"
+                     Grid.Row="1"
+                     Background="#101217"
+                     BorderBrush="#33FFFFFF"
+                     Foreground="{StaticResource PrimaryTextBrush}" />
+        </Grid>
+
+        <Grid Grid.Row="3" Margin="0,14,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />

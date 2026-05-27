@@ -1,20 +1,23 @@
 using System.Windows;
 using System.Windows.Input;
-using MagicSearch.ViewModels;
 using MagicSearch.Models;
-using System.Windows.Controls;
-using Hardcodet.Wpf.TaskbarNotification;
+using MagicSearch.ViewModels;
 
 namespace MagicSearch
 {
     public partial class MainWindow : Window
     {
-        private MainViewModel ViewModel => (MainViewModel)DataContext;
-        private readonly TaskbarIcon _trayIcon = new();
+        private MainViewModel ViewModel { get; }
+        private readonly System.Windows.Forms.NotifyIcon _trayIcon = new();
 
         public MainWindow()
         {
             InitializeComponent();
+
+            ViewModel = new MainViewModel();
+            DataContext = ViewModel;
+
+            SetupTrayIcon();
 
             ViewModel.RequestHide += (_, _) => HideOverlay();
             ViewModel.RequestShow += (_, _) => ShowOverlay();
@@ -24,46 +27,50 @@ namespace MagicSearch
 
         private void SetupTrayIcon()
         {
-            _trayIcon.Icon = new System.Drawing.Icon("Assets/app.ico");
-            _trayIcon.ToolTipText = "MagicSearch";
+            var exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule!.FileName;
+            var icon = System.Drawing.Icon.ExtractAssociatedIcon(exePath);
 
-            _trayIcon.TrayLeftMouseUp += (_, _) => ShowOverlay();
+            _trayIcon.Icon = icon;
+            _trayIcon.Text = "MagicSearch";
+            _trayIcon.Visible = true;
 
-            var menu = new System.Windows.Controls.ContextMenu();
-
-            var openItem = new System.Windows.Controls.MenuItem
+            _trayIcon.MouseClick += (_, e) =>
             {
-                Header = "Open MagicSearch"
+                if (e.Button == System.Windows.Forms.MouseButtons.Left)
+                {
+                    ShowOverlay();
+                }
             };
+
+            var menu = new System.Windows.Forms.ContextMenuStrip();
+
+            var openItem = new System.Windows.Forms.ToolStripMenuItem("Open MagicSearch");
             openItem.Click += (_, _) => ShowOverlay();
 
-            var settingsItem = new System.Windows.Controls.MenuItem
-            {
-                Header = "Settings"
-            };
+            var settingsItem = new System.Windows.Forms.ToolStripMenuItem("Settings");
             settingsItem.Click += (_, _) => ViewModel.OpenSettingsCommand.Execute(null);
 
-            var exitItem = new System.Windows.Controls.MenuItem
-            {
-                Header = "Exit"
-            };
+            var exitItem = new System.Windows.Forms.ToolStripMenuItem("Exit");
             exitItem.Click += (_, _) =>
             {
+                _trayIcon.Visible = false;
                 _trayIcon.Dispose();
-                Application.Current.Shutdown();
+                System.Windows.Application.Current.Shutdown();
             };
 
             menu.Items.Add(openItem);
             menu.Items.Add(settingsItem);
-            menu.Items.Add(new System.Windows.Controls.Separator());
+            menu.Items.Add(new System.Windows.Forms.ToolStripSeparator());
             menu.Items.Add(exitItem);
 
-            _trayIcon.ContextMenu = menu;
+            _trayIcon.ContextMenuStrip = menu;
         }
 
         protected override void OnClosed(EventArgs e)
         {
+            _trayIcon.Visible = false;
             _trayIcon.Dispose();
+
             ViewModel.Dispose();
             base.OnClosed(e);
         }
@@ -78,7 +85,7 @@ namespace MagicSearch
             HideOverlay();
         }
 
-        private void Window_KeyDown(object sender, KeyEventArgs e)
+        private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
             {
@@ -92,7 +99,7 @@ namespace MagicSearch
             ResultsList.SelectedIndex = ViewModel.Results.Count > 0 ? 0 : -1;
         }
 
-        private void SearchBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        private void SearchBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (e.Key == Key.Down)
             {

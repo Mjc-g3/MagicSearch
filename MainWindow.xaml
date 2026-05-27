@@ -208,15 +208,39 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="{Binding StatusText}"
-                           Foreground="{StaticResource SecondaryTextBrush}"
-                           FontSize="12"
-                           VerticalAlignment="Center" />
+
+                <StackPanel Grid.Column="0"
+                Orientation="Vertical"
+                VerticalAlignment="Center">
+
+                    <TextBlock Text="{Binding StatusText}"
+                   Foreground="{StaticResource SecondaryTextBrush}"
+                   FontSize="12"
+                   VerticalAlignment="Center" />
+
+                    <ProgressBar Width="120"
+                            Height="4"
+                            Margin="0,6,0,0"
+                            HorizontalAlignment="Left"
+                            IsIndeterminate="True">
+                        <ProgressBar.Style>
+                            <Style TargetType="ProgressBar">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsIndexing}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ProgressBar.Style>
+                    </ProgressBar>
+                </StackPanel>
+
                 <TextBlock Grid.Column="1"
-                           Text="Enter launch | Ctrl+Enter folder | Esc close"
-                           Foreground="{StaticResource SecondaryTextBrush}"
-                           FontSize="12"
-                           VerticalAlignment="Center" />
+               Text="Enter launch | Ctrl+Enter folder | Esc close"
+               Foreground="{StaticResource SecondaryTextBrush}"
+               FontSize="12"
+               VerticalAlignment="Center" />
             </Grid>
         </Grid>
     </Border>
