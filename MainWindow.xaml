@@ -104,8 +104,8 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Button Content="{Binding Name}"
-                    Tag="{Binding}"
-                    Click="FilterButton_Click"
+                    Command="{Binding DataContext.SelectFilterCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                    CommandParameter="{Binding}"
                     Margin="0,0,6,0"
                     Padding="12,5"
                     FontSize="12"

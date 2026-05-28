@@ -165,13 +165,5 @@ namespace MagicSearch
             Keyboard.Focus(SearchBox);
             SearchBox.SelectAll();
         }
-
-        private void FilterButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button button && button.Tag is SearchFilter filter)
-            {
-                ViewModel.ActiveFilter = filter;
-            }
-        }
     }
 }

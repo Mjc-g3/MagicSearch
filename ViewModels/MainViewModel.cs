@@ -61,6 +61,7 @@ namespace MagicSearch.ViewModels
         public ICommand OpenSettingsCommand { get; }
         public ICommand RebuildIndexCommand { get; }
         public ICommand CancelIndexCommand { get; }
+        public ICommand SelectFilterCommand { get; }
 
         public string Query
         {
@@ -128,6 +129,11 @@ namespace MagicSearch.ViewModels
             {
                 StatusText = $"{settings.HotkeyDisplay} is already in use by another app.";
             }
+            SelectFilterCommand = new RelayCommand<SearchFilter>(filter =>
+            {
+                if (filter is not null)
+                    ActiveFilter = filter;
+            });
 
             _ = InitializeIndexAsync();
         }

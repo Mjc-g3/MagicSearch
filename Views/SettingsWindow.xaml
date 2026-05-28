@@ -15,7 +15,7 @@
         CornerRadius="18"
         Padding="18">
 
-        <Grid>
+        <Grid Margin="0,0,0,2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -72,7 +72,7 @@
                 </Grid>
             </Border>
 
-            <Grid Grid.Row="2">
+            <Grid Grid.Row="2" Margin="0,43,0,69" Grid.RowSpan="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
@@ -91,7 +91,7 @@
                      Grid.Row="1"
                      Background="#101217"
                      BorderBrush="#33FFFFFF"
-                     Foreground="{StaticResource PrimaryTextBrush}" />
+                     Foreground="{StaticResource PrimaryTextBrush}" Height="159" VerticalAlignment="Top" Margin="0,10,0,0" />
             </Grid>
 
             <Grid Grid.Row="3" Margin="0,14,0,0">
@@ -125,10 +125,21 @@
                     Margin="8,0,0,0"
                     IsDefault="True"
                     Click="Save_Click" />
-                <CheckBox
+                <Border
+                    Margin="0,-276,0,289"
+                    Padding="16,12"
+                    Background="#101217"
+                    BorderBrush="#2A3445"
+                    BorderThickness="1"
+                    CornerRadius="10" Grid.ColumnSpan="5">
+
+                    <CheckBox
                     x:Name="StartWithWindowsCheckBox"
-                    Content="Start MagicSearch with Windows"
-                    Margin="0,12,0,0"/>
+                    VerticalAlignment="Center"
+                    Foreground="#DDE7F3"
+                    FontSize="13"
+                    Content="Start MagicSearch with Windows (Recommended)"/>
+                </Border>
             </Grid>
         </Grid>
     </Border>
