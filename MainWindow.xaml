@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:vm="clr-namespace:MagicSearch.ViewModels"
         mc:Ignorable="d"
         Title="MagicSearch"
         Width="780"
@@ -18,9 +17,6 @@
         Deactivated="Window_Deactivated"
         Loaded="Window_Loaded"
         KeyDown="Window_KeyDown">
-    <Window.DataContext>
-        <vm:MainViewModel />
-    </Window.DataContext>
 
     <Border Background="{StaticResource PanelBrush}"
             BorderBrush="{StaticResource PanelBorderBrush}"
@@ -104,16 +100,16 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Button Content="{Binding Name}"
-                    Command="{Binding DataContext.SelectFilterCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                    CommandParameter="{Binding}"
-                    Margin="0,0,6,0"
-                    Padding="12,5"
-                    FontSize="12"
-                    Cursor="Hand"
-                    Foreground="{StaticResource PrimaryTextBrush}"
-                    Background="#18FFFFFF"
-                    BorderBrush="#22FFFFFF"
-                    BorderThickness="1" />
+        Tag="{Binding}"
+        Click="FilterButton_Click"
+        Margin="0,0,6,0"
+        Padding="12,5"
+        FontSize="12"
+        Cursor="Hand"
+        Foreground="{StaticResource PrimaryTextBrush}"
+        Background="#18FFFFFF"
+        BorderBrush="#22FFFFFF"
+        BorderThickness="1" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

@@ -46,9 +46,22 @@ namespace MagicSearch.ViewModels
         public MainViewModel()
         {
             _activeFilter = _filters[0];
+
             OpenSettingsCommand = new RelayCommand(OpenSettings);
             RebuildIndexCommand = new RelayCommand(() => _ = RefreshIndexAsync());
-            CancelIndexCommand = new RelayCommand(CancelIndex, () => IsIndexing);
+
+            CancelIndexCommand = new RelayCommand(
+                _ => CancelIndex(),
+                _ => IsIndexing
+            );
+
+            SelectFilterCommand = new RelayCommand(parameter =>
+            {
+                if (parameter is SearchFilter filter)
+                {
+                    ActiveFilter = filter;
+                }
+            });
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -129,11 +142,6 @@ namespace MagicSearch.ViewModels
             {
                 StatusText = $"{settings.HotkeyDisplay} is already in use by another app.";
             }
-            SelectFilterCommand = new RelayCommand<SearchFilter>(filter =>
-            {
-                if (filter is not null)
-                    ActiveFilter = filter;
-            });
 
             _ = InitializeIndexAsync();
         }
@@ -247,15 +255,18 @@ namespace MagicSearch.ViewModels
         private void UpdateResults()
         {
             var selectedPath = SelectedResult?.Path;
+
             var matches = _searchService.Search(_indexedItems, Query, ActiveFilter.Key);
 
             _results.Clear();
+
             foreach (var result in matches)
             {
                 _results.Add(result);
             }
 
-            SelectedResult = _results.FirstOrDefault(result => result.Path.Equals(selectedPath, StringComparison.OrdinalIgnoreCase))
+            SelectedResult = _results.FirstOrDefault(result =>
+                    result.Path.Equals(selectedPath, StringComparison.OrdinalIgnoreCase))
                 ?? _results.FirstOrDefault();
 
             if (!IsIndexing)

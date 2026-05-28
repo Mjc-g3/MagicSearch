@@ -165,5 +165,16 @@ namespace MagicSearch
             Keyboard.Focus(SearchBox);
             SearchBox.SelectAll();
         }
+
+        private void FilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is System.Windows.Controls.Button button &&
+                button.Tag is SearchFilter filter)
+            {
+                ViewModel.ActiveFilter = filter;
+                ResultsList.SelectedIndex = ViewModel.Results.Count > 0 ? 0 : -1;
+                e.Handled = true;
+            }
+        }
     }
 }
