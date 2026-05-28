@@ -77,6 +77,8 @@ namespace MagicSearch.Views
             _hotkeyKey = settings.HotkeyKey;
             _hotkeyDisplay = settings.HotkeyDisplay;
             HotkeyBox.Text = _hotkeyDisplay;
+
+            StartWithWindowsCheckBox.IsChecked = StartupService.IsEnabled();
         }
 
         private void HotkeyBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
@@ -204,6 +206,8 @@ namespace MagicSearch.Views
                 HotkeyKey = _hotkeyKey,
                 HotkeyDisplay = _hotkeyDisplay
             });
+
+            StartupService.SetEnabled(StartWithWindowsCheckBox.IsChecked == true);
 
             DialogResult = true;
         }

@@ -5,49 +5,57 @@
         Width="560"
         Height="500"
         WindowStartupLocation="CenterOwner"
-        Background="#17191F"
-        Foreground="{StaticResource PrimaryTextBrush}">
-    <Grid Margin="18">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+        Foreground="{StaticResource PrimaryTextBrush}"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent">
+    <Border Background="#17191F"
+        BorderBrush="#33FFFFFF"
+        BorderThickness="1"
+        CornerRadius="18"
+        Padding="18">
 
-        <StackPanel>
-            <TextBlock Text="Settings"
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel>
+                <TextBlock Text="Settings"
                        FontSize="20"
                        FontWeight="SemiBold" />
-            <TextBlock Text="Choose indexed folders and change the global search hotkey."
+                <TextBlock Text="Choose indexed folders and change the global search hotkey."
                        Foreground="{StaticResource SecondaryTextBrush}"
                        Margin="0,4,0,14" />
-        </StackPanel>
+            </StackPanel>
 
-        <Border Grid.Row="1"
+            <Border Grid.Row="1"
                 Background="#101217"
                 BorderBrush="#33FFFFFF"
                 BorderThickness="1"
                 CornerRadius="10"
                 Padding="12"
                 Margin="0,0,0,14">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="180" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="180" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-                <StackPanel>
-                    <TextBlock Text="Global hotkey"
+                    <StackPanel>
+                        <TextBlock Text="Global hotkey"
                                FontWeight="SemiBold" />
-                    <TextBlock Text="This opens the MagicSearch overlay."
+                        <TextBlock Text="This opens the MagicSearch overlay."
                                Foreground="{StaticResource SecondaryTextBrush}"
                                FontSize="12"
                                Margin="0,3,0,0" />
-                </StackPanel>
+                    </StackPanel>
 
-                <TextBox x:Name="HotkeyBox"
+                    <TextBox x:Name="HotkeyBox"
                          Grid.Column="1"
                          Height="34"
                          IsReadOnly="True"
@@ -55,68 +63,73 @@
                          TextAlignment="Center"
                          PreviewKeyDown="HotkeyBox_PreviewKeyDown" />
 
-                <Button Grid.Column="2"
+                    <Button Grid.Column="2"
                         Content="Reset"
                         Width="70"
                         Height="34"
                         Margin="8,0,0,0"
                         Click="ResetHotkey_Click" />
-            </Grid>
-        </Border>
+                </Grid>
+            </Border>
 
-        <Grid Grid.Row="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
 
-            <StackPanel>
-                <TextBlock Text="Indexed folders"
+                <StackPanel>
+                    <TextBlock Text="Indexed folders"
                            FontSize="16"
                            FontWeight="SemiBold" />
-                <TextBlock Text="Folders added here are searched alongside Start Menu apps."
+                    <TextBlock Text="Folders added here are searched alongside Start Menu apps."
                            Foreground="{StaticResource SecondaryTextBrush}"
                            Margin="0,4,0,10" />
-            </StackPanel>
+                </StackPanel>
 
-            <ListBox x:Name="FoldersList"
+                <ListBox x:Name="FoldersList"
                      Grid.Row="1"
                      Background="#101217"
                      BorderBrush="#33FFFFFF"
                      Foreground="{StaticResource PrimaryTextBrush}" />
-        </Grid>
+            </Grid>
 
-        <Grid Grid.Row="3" Margin="0,14,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+            <Grid Grid.Row="3" Margin="0,14,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-            <Button Content="Add folder"
+                <Button Content="Add folder"
                     Width="104"
                     Height="34"
                     Click="AddFolder_Click" />
-            <Button Grid.Column="1"
+                <Button Grid.Column="1"
                     Content="Remove"
                     Width="86"
                     Height="34"
                     Margin="8,0,0,0"
                     Click="RemoveFolder_Click" />
-            <Button Grid.Column="3"
+                <Button Grid.Column="3"
                     Content="Cancel"
                     Width="86"
                     Height="34"
                     IsCancel="True" />
-            <Button Grid.Column="4"
-                    Content="Save"
+                <Button Grid.Column="4"
+                    Content="Save &amp; Restart"
                     Width="86"
                     Height="34"
                     Margin="8,0,0,0"
                     IsDefault="True"
                     Click="Save_Click" />
+                <CheckBox
+                    x:Name="StartWithWindowsCheckBox"
+                    Content="Start MagicSearch with Windows"
+                    Margin="0,12,0,0"/>
+            </Grid>
         </Grid>
-    </Grid>
+    </Border>
 </Window>

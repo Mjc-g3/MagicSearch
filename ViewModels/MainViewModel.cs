@@ -291,27 +291,33 @@ namespace MagicSearch.ViewModels
 
             if (settingsWindow.ShowDialog() == true)
             {
-                var newSettings = _settingsService.LoadAsync().GetAwaiter().GetResult();
+                RestartApplication();
+            }
+        }
 
-                if (!_hotkeyService.TryChangeHotkey(_owner, newSettings.HotkeyModifiers, newSettings.HotkeyKey))
+        private void RestartApplication()
+        {
+            try
+            {
+                var exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName;
+
+                if (string.IsNullOrWhiteSpace(exePath))
                 {
-                    System.Windows.MessageBox.Show(
-                        _owner,
-                        $"{newSettings.HotkeyDisplay} could not be registered. Reverting to Ctrl + Space.",
-                        "Hotkey unavailable",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Warning
-                    );
-
-                    newSettings.HotkeyModifiers = 0x0002;
-                    newSettings.HotkeyKey = 0x20;
-                    newSettings.HotkeyDisplay = "Ctrl + Space";
-
-                    _settingsService.SaveAsync(newSettings).GetAwaiter().GetResult();
-                    _hotkeyService.TryChangeHotkey(_owner, newSettings.HotkeyModifiers, newSettings.HotkeyKey);
+                    StatusText = "Could not restart application.";
+                    return;
                 }
 
-                //_ = RefreshIndexAsync();
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = exePath,
+                    UseShellExecute = true
+                });
+
+                System.Windows.Application.Current.Shutdown();
+            }
+            catch (Exception ex)
+            {
+                StatusText = $"Restart failed: {ex.Message}";
             }
         }
 
